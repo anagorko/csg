@@ -61,7 +61,7 @@ parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType
                     nargs='?', help='output filename')
 parser.add_argument('--format', default='mcn', choices=['mcn', 'scg', 'mtzdd'],
                     help='input format')
-parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'minmaxmin'],
+parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'minmaxmin'],
                     help='problem type')
 args = parser.parse_args()
 
@@ -196,7 +196,7 @@ for r1 in rules:
         assert(cnt == 1)    
 
 #
-# Part II. Agent payouts.
+# Part II. Agent payouts (NTU).
 #
 
 def avar(k):
@@ -214,18 +214,19 @@ for a in agents:
     constr.append(c)
 
 #
-# Part III. Minimal utility
+# Part III. Egalitarian problem
 #
 
-for a in agents:
-    c = Constraint()
-    
-    c.addVariable('minA', 1.0)
-    c.addVariable(avar(a), -1.0)
-    c.setType(Constraint.LT)
-    c.setBound(0.0)
-    
-    constr.append(c)
+if args.type == 'egalitarian':
+    for a in agents:
+        c = Constraint()        
+        c.addVariable('minA', 1.0)
+        c.addVariable(avar(a), -1.0)
+        c.setType(Constraint.LT)
+        c.setBound(0.0)
+        constr.append(c)
+
+    obj = 'Maximize\n  obj: minA\n'
 
 #
 # Part IV. maxmin (if needed)
@@ -240,15 +241,32 @@ if args.type == 'minmaxmin':
         c.setType(Constraint.GT)
         c.setBound(0.0)
 
-###
-### Objective
-###
+#
+# Part V. Elitist problem
+#
 
-if args.type == 'egalitarian':
-    obj = 'Maximize\n  obj: minA\n'
-elif args.type == 'minmaxmin':
-    obj = 'Minimize\n  obj: maxmin\n'
+def wvar(k):
+    return 'w' + str(k)
 
+if args.type == 'elitist':
+    for a in agents:
+        c = Constraint()        
+        c.addVariable('maxA', 1.0)
+        c.addVariable(avar(a), -1.0)
+        c.addVariable(wvar(a), -1000000.0)
+        c.setType(Constraint.LT)
+        c.setBound(0.0)
+        constr.append(c)
+
+    c = Constraint()
+    for a in agents:
+        c.addVariable(wvar(a), 1.0)
+        c.setBound(1.0)
+        c.setType(Constraint.EQ)
+    constr.append(c)
+
+    obj = 'Maximize\n  obj: maxA\n'
+    
 ###
 ### Write output
 ###
@@ -270,5 +288,9 @@ ofile.write("Binary\n")
 
 for r in rules:
     ofile.write(xvar(r) + '\n')
+
+if args.type == 'elitist':
+    for a in agents:
+        ofile.write(wvar(str(a)) + '\n')
 
 ofile.close()
