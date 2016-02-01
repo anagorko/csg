@@ -29,8 +29,8 @@ conn.isolation_level = None
 ### Enable math extensions
 ###
 
-conn.enable_load_extension(True)
-conn.load_extension("src/libsqlite_math.so")
+#conn.enable_load_extension(True)
+#conn.load_extension("src/libsqlite_math.so")
 
 cur = conn.cursor()
 
@@ -38,7 +38,31 @@ cur = conn.cursor()
 ### Read data
 ###
 
-cur.execute('select * from problems')
+cur.execute('select test_id, avg(solution_time), agents from problems where solved=1 group by agents, test_id')
 
-row = cur.fetchall()
+rows = cur.fetchall()
+
+###
+### Create tables
+### 
+
+graphs = {}
+
+for r in rows:
+    if not r[0] in graphs:
+        graphs[r[0]] = []
+    
+    graphs[r[0]].append([r[2], r[1]])
+        
+###
+### Write tables
+###
+
+for name, table in graphs.iteritems():
+    filename = name + '.dat'
+    
+    dat = open(directory + filename, 'w')
+    dat.write('agents\ttime\n')
+    for d in table:
+        dat.write("%d\t%d\n" % (d[0],d[1]))
 

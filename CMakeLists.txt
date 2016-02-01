@@ -31,7 +31,7 @@ set(CORES 2)
 
 set(SEED 314159265)
 set(AGENTS 60)
-set(STEPS 10)
+set(STEPS 2)
 set(REPETITIONS 5)
 
 set(DECAY_ALPHA 0.55)
@@ -83,5 +83,6 @@ add_custom_target(computations
 #
 
 add_custom_target(graphs
-  COMMAND echo not implemented yet
+  USES_TERMINAL
+  COMMAND ./graph_generator.py --directory ${DIRECTORY}
 )
