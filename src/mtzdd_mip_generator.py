@@ -14,7 +14,7 @@ parser.add_argument('input', default=sys.stdin, type=argparse.FileType('r'),
                     nargs='?', help='input filename')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'balanced', 'utilitarian-tu'],
+parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'balanced', 'utilitarian-tu'],
                     help='problem type')
 args = parser.parse_args()
 
@@ -147,10 +147,6 @@ if args.type == 'egalitarian':
         c.setBound(0.0)
         c.setType(Constraint.LT)
         constr.append(c)
-    
-elif args.type == 'elitist':
-    obj = 'Maximize\n  obj: '
-    # TODO
 
 elif args.type == 'balanced':
     obj = 'Minimize\n  obj: '
