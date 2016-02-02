@@ -2,52 +2,7 @@
 
 import argparse, sys
 from mcnets import MCNetsRule
-
-class Constraint(object):
-    LT = 1
-    GT = 2
-    EQ = 3
-    
-    def __init__(self):
-        self.type = Constraint.LT
-        self.bound = 0.0
-        self.var = {}
-    
-    def addVariable(self, var, val):
-        # TODO: check if var exists and adjust accordingly
-        self.var[var] = val
-    
-    def setBound(self, val):
-        self.bound = val
-            
-    def setType(self, type):
-        assert(type == Constraint.LT or type == Constraint.GT or type == Constraint.EQ)
-        self.type = type
-
-    def __str__(self):
-        s = ''
-        
-        first = True
-        for var, val in self.var.iteritems():
-            if not first:
-                s += ' + '
-            else:
-                first = False
-            s += str(val) + ' ' + var
-            
-        if self.type == Constraint.EQ:
-            s += ' = '
-        elif self.type == Constraint.LT:
-            s += ' <= '
-        elif self.type == Constraint.GT:
-            s += ' >= '
-            
-        s += str(self.bound)
-        
-        return s
-
-    def __eq__(self):
-        print "eq"
+from constraint import Constraint
         
 ###
 ### Command line arguments
@@ -59,26 +14,21 @@ parser.add_argument('input', default=sys.stdin, type=argparse.FileType('r'),
                     nargs='?', help='input filename')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--format', default='mcn', choices=['mcn', 'scg', 'mtzdd'],
-                    help='input format')
 parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'minmaxmin'],
                     help='problem type')
 args = parser.parse_args()
 
 if not args.quiet:
-    print "\033[1;34mCSG MIP Problem Generator\033[0m"
+    print "\033[1;34mCSG MIP Problem Generator for MC-Nets Representation\033[0m"
     print ""
     print "           Input file: \033[1;33m", args.input.name, "\033[0m"
     print "          Output file: \033[1;33m", args.output.name, "\033[0m"
-    print "          File format: \033[1;33m", args.format, "\033[0m"
     print "         Problem type: \033[1;33m", args.type, "\033[0m"
     print ""
 
 ###
 ### Read input file
 ###
-
-# TODO: more robust parsing method
 
 ifile = args.input
 rules = []

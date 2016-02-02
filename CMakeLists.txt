@@ -30,8 +30,8 @@ set(DIRECTORY ${PROJECT_SOURCE_DIR}/experiments)
 set(CORES 2)
 
 set(SEED 314159265)
-set(AGENTS 60)
-set(STEPS 2)
+set(AGENTS 30)
+set(STEPS 10)
 set(REPETITIONS 5)
 
 set(DECAY_ALPHA 0.55)
@@ -65,7 +65,7 @@ add_custom_target(problems
   USES_TERMINAL
   COMMAND ./experiment_generator.py --seed ${SEED} --agents ${AGENTS} --steps ${STEPS} --repetitions ${REPETITIONS} --directory ${DIRECTORY}
     --decay_alpha ${DECAY_ALPHA} --decay_p ${DECAY_P} --tri_p ${TRI_P} --tri_n ${TRI_N}
-  DEPENDS src/experiment_generator.py src/problem_generator.py src/mip_generator.py
+  DEPENDS src/experiment_generator.py src/problem_generator.py src/mcnets_mip_generator.py
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 )
 

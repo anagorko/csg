@@ -85,9 +85,9 @@ def mcnets_generator(method, goal, a, i):
     global decay_alpha, decay_, tri_p, tri_n, cur
     
     test_id = 'mcn-'+method+'-'+goal+'-ntu'
-    problem_id = 'mcn_' + str(a) + '_' + str(i + 1) + '_' + method
+    problem_id = 'mcn_' + str(a) + '_' + str(i + 1) + '_' + method + '_' + goal
     problem_type = 'mcn'
-    problem_file = problem_id + '.' + problem_type
+    problem_file = 'mcn_' + str(a) + '_' + str(i + 1) + '_' + method + '.' + problem_type
     agents = a
     rules = a
     seed = random.randint(0, 999999999)
@@ -112,11 +112,11 @@ def mcnets_generator(method, goal, a, i):
     #
     # Generate MIP file
     #
-    mip_file = problem_id + '_' + goal + '.lp'
+    mip_file = problem_id + '.lp'
     mip_parameters = directory + '/' + problem_file + \
                      ' --output ' + directory + '/' + mip_file + \
                      ' --format mcn --type ' + goal
-    cmd = './mip_generator.py -q ' + mip_parameters
+    cmd = './mcnets_mip_generator.py -q ' + mip_parameters
     code = os.system(cmd)
     if (code != 0):
         print "\033[1mError:\033[0m\033[1;31m Execution of command '" + cmd + "' failed.\033[0m"
