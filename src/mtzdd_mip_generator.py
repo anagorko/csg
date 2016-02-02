@@ -14,7 +14,7 @@ parser.add_argument('input', default=sys.stdin, type=argparse.FileType('r'),
                     nargs='?', help='input filename')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'minmaxmin'],
+parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'minmaxmin', 'utilitarian-tu'],
                     help='problem type')
 args = parser.parse_args()
 
@@ -123,16 +123,29 @@ for i in p.A():
 # Objective
 #
 
-obj = 'Maximize\n  obj: '
-first = True
-for g in p.GS():
-    if not first:
-        obj += ' + '
-    else:
-        first = False
+if args.type == 'egalitarian':
+    obj = 'Maximize\n  obj: '
+    # TODO
+    
+elif args.type == 'elitist':
+    obj = 'Maximize\n  obj: '
+    # TODO
+
+elif args.type == 'minmaxmin':
+    obj = 'Minimize\n  obj: '
+    # TODO
+
+elif args.type == 'utilitarian-tu':
+    obj = 'Maximize\n  obj: '
+    first = True
+    for g in p.GS():
+        if not first:
+            obj += ' + '
+        else:
+            first = False
         
-    obj += str(p.T[g[0]]) + ' ' + xvar(g)
-obj += '\n'
+        obj += str(p.T[g[0]]) + ' ' + xvar(g)
+    obj += '\n'
 
 ###
 ### Write output

@@ -78,7 +78,7 @@ cur.execute('CREATE TABLE problems (\
   )
 
 ###
-### MC-Nets with decay distribution (egalitarian and elitist)
+### MC-Nets with decay or trinomial distribution (egalitarian and elitist)
 ###
 
 def mcnets_generator(method, goal, a, i):
@@ -128,6 +128,10 @@ def mcnets_generator(method, goal, a, i):
     cur.execute('INSERT INTO problems VALUES ("%s", "%s", "%s", "%s", %d, %d, %d, "%s", "%s", "%s", NULL, 0, NULL, NULL, NULL)' 
         % (problem_id, test_id, problem_type, problem_file, agents, rules, seed, parameters, mip_file, mip_parameters))
 
+###
+### MTZDD with trinomial distribution (egalitarian, elitist and minmaxmin)
+###
+
 def mtzdd_generator(goal, a, i):
     global decay_alpha, decay_, tri_p, tri_n, cur
 
@@ -153,7 +157,7 @@ def mtzdd_generator(goal, a, i):
         sys.exit(2)
 
     #
-    # Generate MCN MIP file
+    # Generate MTZDD MIP file
     #
     mip_file = problem_id + '.lp'
     mip_parameters = directory + '/' + problem_file + \
