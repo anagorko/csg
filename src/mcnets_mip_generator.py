@@ -14,7 +14,7 @@ parser.add_argument('input', default=sys.stdin, type=argparse.FileType('r'),
                     nargs='?', help='input filename')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'balanced'],
+parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist'],
                     help='problem type')
 args = parser.parse_args()
 
@@ -177,20 +177,6 @@ if args.type == 'egalitarian':
         constr.append(c)
 
     obj = 'Maximize\n  obj: minA\n'
-
-#
-# Part IV. balanced (if needed)
-#
-
-if args.type == 'balanced':
-    # Sadly, this doesn't work
-    for a in agents:
-        c = Constraint()
-        c.addVariable('maxmin', 1.0)
-        c.addVariable(avar(a), -1.0)
-        c.addVariable('minA', 1.0)
-        c.setType(Constraint.GT)
-        c.setBound(0.0)
 
 #
 # Part V. Elitist problem
