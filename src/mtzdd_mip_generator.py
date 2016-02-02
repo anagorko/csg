@@ -31,12 +31,13 @@ if not args.quiet:
 ### Read input file
 ###
 
-#ifile = args.input
-#line = ifile.read()
-#mtzdd = MTZDD.fromString(line)
-#ifile.close()
+ifile = args.input
+li = ifile.readline().strip()
+while li.startswith("#") or li == '':
+    li = ifile.readline().strip()
+p = MTZDD.fromString(li)
+ifile.close()
 
-p = MTZDD.getExample()
 p.precompute()
 
 ###
@@ -44,12 +45,19 @@ p.precompute()
 ###
 
 constr = []
+binary = set()
 
 def xvar(g):
-    return "x_" + str(g[0]) + "_" + str(g[1])
+    global binary
+    v = "x_" + str(g[0]) + "_" + str(g[1])
+    binary.add(v)
+    return  v
 
 def xevar(g, e):
-    return "xe_" + str(g[0]) + "_" + str(g[1]) + "_" + str(e[0]) + "_" + str(e[1])
+    global binary
+    v = "xe_" + str(g[0]) + "_" + str(g[1]) + "_" + str(e[0]) + "_" + str(e[1])
+    binary.add(v)
+    return  v
 
 #
 # Constraints of type (i)
@@ -100,12 +108,32 @@ for u in p.I:
 # Constraints of type (iv)
 #
 
+for i in p.A():
+    c = Constraint()
+
+    for u in p.nodes(i):
+        for g in p.GS():
+            c.addVariable(xevar(g, [u, p.H[u]]), 1.0)
+            
+    c.setType(Constraint.LT)
+    c.setBound(1.0)
+    constr.append(c)
+            
 #
 # Objective
 #
 
-obj = "objective"
-    
+obj = 'Maximize\n  obj: '
+first = True
+for g in p.GS():
+    if not first:
+        obj += ' + '
+    else:
+        first = False
+        
+    obj += str(p.T[g[0]]) + ' ' + xvar(g)
+obj += '\n'
+
 ###
 ### Write output
 ###
@@ -121,5 +149,7 @@ for c in constr:
 
 ofile.write("Binary\n")
 
-
+for b in binary:
+    ofile.write(b + '\n')
+    
 ofile.close()

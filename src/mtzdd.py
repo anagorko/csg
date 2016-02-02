@@ -63,8 +63,7 @@ class MTZDD(object):
         
     @classmethod
     def getRandomRuleDecayDistribution(cls, agents, alpha, p):
-        
-        pass
+        return MTZDD.getExample() ## TODO
     
     def __str__(self):
         r = ''
@@ -111,11 +110,13 @@ class MTZDD(object):
         self._goals = {}
         self._GS = []
         self._nodes = {}
-
+        self._A = []
+        
         for n in self.I:
             if not self.I[n] in self._nodes:
                 self._nodes[self.I[n]] = []
             self._nodes[self.I[n]].append(n)
+            self._A.append(self.I[n])
 
         _GS = []
         for t in self.T:
@@ -155,6 +156,9 @@ class MTZDD(object):
 
     def h(self, g):
         return [ g[1], self.H[g[1]] ]
+    
+    def A(self):
+        return self._A
         
 #
 # Unit tests for the MTZDD class

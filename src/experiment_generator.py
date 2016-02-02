@@ -101,7 +101,7 @@ def mcnets_generator(method, goal, a, i):
         parameters += ' --method trinomial ' + str(tri_p) + ' ' + str(tri_n)
 
     #
-    # Generate problem file
+    # Generate MCN problem file
     #
     cmd = './problem_generator.py -q ' + parameters
     code = os.system(cmd)
@@ -110,18 +110,61 @@ def mcnets_generator(method, goal, a, i):
         sys.exit(2)
 
     #
-    # Generate MIP file
+    # Generate MCN MIP file
     #
     mip_file = problem_id + '.lp'
     mip_parameters = directory + '/' + problem_file + \
                      ' --output ' + directory + '/' + mip_file + \
-                     ' --format mcn --type ' + goal
+                     ' --type ' + goal
     cmd = './mcnets_mip_generator.py -q ' + mip_parameters
     code = os.system(cmd)
     if (code != 0):
         print "\033[1mError:\033[0m\033[1;31m Execution of command '" + cmd + "' failed.\033[0m"
         sys.exit(2)
         
+    #
+    # Insert database row with problem description
+    #
+    cur.execute('INSERT INTO problems VALUES ("%s", "%s", "%s", "%s", %d, %d, %d, "%s", "%s", "%s", NULL, 0, NULL, NULL, NULL)' 
+        % (problem_id, test_id, problem_type, problem_file, agents, rules, seed, parameters, mip_file, mip_parameters))
+
+def mtzdd_generator(goal, a, i):
+    global decay_alpha, decay_, tri_p, tri_n, cur
+
+    test_id = 'mtzdd-decay-'+goal+'-ntu'
+    problem_id = 'mtzdd_' + str(a) + '_' + str(i + 1) + '_decay_' + goal
+    problem_type = 'mtzdd'
+    problem_file = 'mtzdd_' + str(a) + '_' + str(i + 1) + '_decay.' + problem_type
+    agents = a
+    rules = 1
+    seed = random.randint(0, 999999999)
+    parameters = '--format mtzdd --agents ' + str(agents) + ' --rules 1' + \
+                 ' --seed ' + str(seed) + \
+                 ' --output ' + directory + '/' + problem_file + \
+                 ' --method decay ' + str(decay_alpha) + ' ' + str(decay_p)
+
+    #
+    # Generate MTZDD problem file
+    #
+    cmd = './problem_generator.py -q ' + parameters
+    code = os.system(cmd)
+    if (code != 0):
+        print "\033[1mError:\033[0m\033[1;31m Execution of command '" + cmd + "' failed.\033[0m"
+        sys.exit(2)
+
+    #
+    # Generate MCN MIP file
+    #
+    mip_file = problem_id + '.lp'
+    mip_parameters = directory + '/' + problem_file + \
+                     ' --output ' + directory + '/' + mip_file + \
+                     ' --type ' + goal
+    cmd = './mtzdd_mip_generator.py -q ' + mip_parameters
+    code = os.system(cmd)
+    if (code != 0):
+        print "\033[1mError:\033[0m\033[1;31m Execution of command '" + cmd + "' failed.\033[0m"
+        sys.exit(2)
+
     #
     # Insert database row with problem description
     #
@@ -140,6 +183,9 @@ for a in range(n0, n + 1, n0):
         mcnets_generator('decay', 'elitist', a, i)
         mcnets_generator('trinomial', 'egalitarian', a, i)
         mcnets_generator('trinomial', 'elitist', a, i)
+        mtzdd_generator('egalitarian', a, i)
+        mtzdd_generator('elitist', a, i)
+        mtzdd_generator('minmaxmin', a, i)
                    
 #
 # Save the database

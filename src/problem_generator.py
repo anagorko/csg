@@ -17,6 +17,7 @@ signal(SIGINT, signal_handler)
 
 import sys, argparse, random
 from mcnets import MCNetsRule
+from mtzdd import MTZDD
 
 #
 # Generate a compact .mcn, .mtzdd or .scg representation of characteristic function
@@ -42,10 +43,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--quiet', '-q', action='store_true')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--format', default='mcn', choices=['mcn', 'scg', 'mtzdd'],
+parser.add_argument('--format', default='mcn', choices=['mcn', 'mtzdd'],
                     help='output format')
-parser.add_argument('--agents', '-na', type=int, help='number of agents', default=1000)
-parser.add_argument('--rules', '-nr', type=int, help='number of rules', default=500)
+parser.add_argument('--agents', '-na', type=int, help='number of agents', default=50)
+parser.add_argument('--rules', '-nr', type=int, help='number of rules', default=1)
 parser.add_argument('--method', '-m', choices=['decay', 'trinomial'], help='method of generation',
                     default='trinomial')
 parser.add_argument('--seed', type=int, help='random seed', default=1)
@@ -68,12 +69,12 @@ if (not args.quiet):
 ### Parameter checking
 ###
 
-if args.format == 'scg':
-    print "\033[1mError:\033[0m\033[1;31m scg file format is not implemented.\033[0m"
+if args.format == 'mtzdd' and args.rules > 1:
+    print "\033[1mError:\033[0m\033[1;31m mtzdd file format allows only single rule.\033[0m"
     sys.exit(2)
 
-if args.format == 'mtzdd':
-    print "\033[1mError:\033[0m\033[1;31m mtzdd file format is not implemented.\033[0m"
+if args.format == 'mtzdd' and args.method != 'decay':
+    print "\033[1mError:\033[0m\033[1;31m mtzdd implements only decay method.\033[0m"
     sys.exit(2)
 
 if args.method == 'trinomial':
@@ -95,20 +96,29 @@ random.seed(args.seed)
 rules = []
 
 for a in range(args.rules):
-    if args.method == 'trinomial':
-        probP = args.params[0]
-        probN = args.params[1]
-        maxUtility = args.agents
-        
-        r = MCNetsRule.getRandomRuleTrinomialDistribution(args.agents, probP, probN)
-    elif args.method == 'decay':
-        decay_alpha = args.params[0]
-        decay_p = args.params[1]
 
-        r = MCNetsRule.getRandomRuleDecayDistribution(args.agents, decay_alpha, decay_p)
-    else:
-        pass
-        
+    if args.format == 'mcn':
+        if args.method == 'trinomial':
+            probP = args.params[0]
+            probN = args.params[1]
+            maxUtility = args.agents
+            
+            r = MCNetsRule.getRandomRuleTrinomialDistribution(args.agents, probP, probN)
+        elif args.method == 'decay':
+            decay_alpha = args.params[0]
+            decay_p = args.params[1]
+    
+            r = MCNetsRule.getRandomRuleDecayDistribution(args.agents, decay_alpha, decay_p)
+        else:
+            pass
+
+    if args.format == 'mtzdd':
+        if args.method == 'decay':
+            decay_alpha = args.params[0]
+            decay_p = args.params[1]
+            
+            r = MTZDD.getRandomRuleDecayDistribution(args.agents, decay_alpha, decay_p)        
+
     rules.append(r)
         
 ###
