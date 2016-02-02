@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import unittest, random
+import unittest, random, types
 
 class MTZDD(object):
     def __init__(self):
@@ -22,6 +22,8 @@ class MTZDD(object):
         if (n > self.N):
             self.N = n
 
+        assert(type(v) is list)
+        
         self.T[n] = v
         return n
     
@@ -54,10 +56,10 @@ class MTZDD(object):
         r.addINode(3, 7, 8, 4)
         r.addINode(4, 8, 9, 5)
         r.addINode(3, 9, 10, 6)
-        r.addTNode(0, 7)
-        r.addTNode(1, 8)
-        r.addTNode(5, 9)
-        r.addTNode(7, 10)
+        r.addTNode([0], 7)
+        r.addTNode([1], 8)
+        r.addTNode([5], 9)
+        r.addTNode([7], 10)
         
         return r
         
@@ -74,8 +76,11 @@ class MTZDD(object):
         r += '0 '
         
         for id, v in self.T.iteritems():
-            r += str(id) + ' ' + str(v) + ' '
-        
+            r += str(id) + ' '
+            for w in v:
+                r += str(w) + ' '
+            r += '-1 '
+
         r += '0'
 
         return r
@@ -96,8 +101,12 @@ class MTZDD(object):
         
         n = i.next()
         while n != 0:
+            w = []
             v = i.next()
-            r.addTNode(v,n)
+            while v != -1:
+                w.append(v)
+                v = i.next()
+            r.addTNode(w,n)
             n = i.next()
         
         return r
