@@ -9,8 +9,9 @@ class MTZDD(object):
         self.H = {}
         self.L = {}
         self.N = 0
+        self.u0 = 1
         self.P = {}
-        self.minCache = {}
+        self._min = {}
         
     def Pa(self, node):
         return self.P[node]
@@ -105,9 +106,27 @@ class MTZDD(object):
     def __eq__(self, r):
         return self.I == r.I and self.T == r.T and self.H == r.H and self.L == r.L and self.N == r.N and self.P == r.P
 
+
+    def precompute(self):
+        self._goals = {}
+        self._GS = []
+        self._nodes = {}
+
+        for n in self.I:
+            if not self.I[n] in self._nodes:
+                self._nodes[self.I[n]] = []
+            self._nodes[self.I[n]].append(n)
+
+        _GS = []
+        for t in self.T:
+            self._goals[t] = []
+            for n in self.min(t):
+                self._goals[t].append([t, n])
+                self._GS.append([t,n])
+    
     def min(self, t):
-        if t in self.minCache:
-            return self.minCache[t]
+        if t in self._min:
+            return self._min[t]
             
         m = set()
         
@@ -119,19 +138,24 @@ class MTZDD(object):
             else:
                 m |= self.min(n)
 
-        self.minCache[t] = m
+        self._min[t] = m
         
         return m
-
+        
     def goals(self, t):
-        pass
+        return self._goals[t]
     
     def GS(self):
-        pass
+        return self._GS
         
     def nodes(self, i):
-        pass
+        if not i in self._nodes:
+            return []
+        return self._nodes[i]
 
+    def h(self, g):
+        return [ g[1], self.H[g[1]] ]
+        
 #
 # Unit tests for the MTZDD class
 #

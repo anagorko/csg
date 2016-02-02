@@ -23,7 +23,6 @@ if not args.quiet:
     print ""
     print "           Input file: \033[1;33m", args.input.name, "\033[0m"
     print "          Output file: \033[1;33m", args.output.name, "\033[0m"
-    print "          File format: \033[1;33m", args.format, "\033[0m"
     print "         Problem type: \033[1;33m", args.type, "\033[0m"
     print ""
 
@@ -32,16 +31,78 @@ if not args.quiet:
 ### Read input file
 ###
 
-ifile = args.input
-line = ifile.read()
-mtzdd = MTZDD.fromString(line)
-ifile.close()
+#ifile = args.input
+#line = ifile.read()
+#mtzdd = MTZDD.fromString(line)
+#ifile.close()
+
+p = MTZDD.getExample()
+p.precompute()
 
 ###
 ### Generate constraints
 ###
 
 constr = []
+
+def xvar(g):
+    return "x_" + str(g[0]) + "_" + str(g[1])
+
+def xevar(g, e):
+    return "xe_" + str(g[0]) + "_" + str(g[1]) + "_" + str(e[0]) + "_" + str(e[1])
+
+#
+# Constraints of type (i)
+#
+
+for g in p.GS():
+    c = Constraint()
+    c.addVariable(xvar(g), 1.0)
+    c.addVariable(xevar(g, p.h(g)), -1.0)
+    c.setType(Constraint.EQ)
+    c.setBound(0.0)
+    constr.append(c)
+
+#
+# Constraints of type (ii)
+#
+
+for t in p.T:
+    if p.T[t] == 0:
+        continue
+    for g in p.goals(t):
+        c = Constraint()
+        c.addVariable(xvar(g), 1.0)
+        for u in p.Pa(t):
+            c.addVariable(xevar(g, [ u, t ]), -1.0)
+        c.setType(Constraint.EQ)
+        c.setBound(0.0)
+        constr.append(c)
+
+#
+# Constraints of type (iii)
+#
+
+for u in p.I:
+    if u == p.u0:
+        continue
+    for g in p.GS():
+        c = Constraint()        
+        c.addVariable(xevar(g, [u, p.H[u]]), 1.0)
+        c.addVariable(xevar(g, [u, p.L[u]]), 1.0)
+        for up in p.Pa(u):
+            c.addVariable(xevar(g, [up, u]), -1.0)
+        c.setType(Constraint.EQ)
+        c.setBound(0.0)
+        constr.append(c)
+
+#
+# Constraints of type (iv)
+#
+
+#
+# Objective
+#
 
 obj = "objective"
     
