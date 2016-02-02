@@ -5,7 +5,7 @@ import unittest, random, types
 class MTZDD(object):
     def __init__(self):
         self.I = {}
-        self.T = {}
+        self.T = {}     # Terminal nodes. Map "node id" -> "value list"
         self.H = {}
         self.L = {}
         self.N = 0
@@ -56,10 +56,10 @@ class MTZDD(object):
         r.addINode(3, 7, 8, 4)
         r.addINode(4, 8, 9, 5)
         r.addINode(3, 9, 10, 6)
-        r.addTNode([0], 7)
-        r.addTNode([1], 8)
-        r.addTNode([5], 9)
-        r.addTNode([7], 10)
+        r.addTNode([0, 0, 0, 0], 7)
+        r.addTNode([1, 1, 1, 1], 8)
+        r.addTNode([5, 5, 5, 5], 9)
+        r.addTNode([7, 7, 7, 7], 10)
         
         return r
         
@@ -151,7 +151,10 @@ class MTZDD(object):
         self._min[t] = m
         
         return m
-        
+    
+    # Every goal is a pair [t, n]
+    #   t - id of terminal node
+    #   n - id of first node of high edge
     def goals(self, t):
         return self._goals[t]
     

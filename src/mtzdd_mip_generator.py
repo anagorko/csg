@@ -14,7 +14,7 @@ parser.add_argument('input', default=sys.stdin, type=argparse.FileType('r'),
                     nargs='?', help='input filename')
 parser.add_argument('-o', '--output', default=sys.stdout, type=argparse.FileType('w'), 
                     nargs='?', help='output filename')
-parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'minmaxmin', 'utilitarian-tu'],
+parser.add_argument('--type', default='egalitarian', choices=['egalitarian', 'elitist', 'balanced', 'utilitarian-tu'],
                     help='problem type')
 args = parser.parse_args()
 
@@ -76,7 +76,11 @@ for g in p.GS():
 #
 
 for t in p.T:
-    if p.T[t] == 0:
+    zero = True
+    for x in p.T[t]:
+        if x != 0:
+            zero = False
+    if zero:
         continue
     for g in p.goals(t):
         c = Constraint()
@@ -123,15 +127,32 @@ for i in p.A():
 # Objective
 #
 
+def avar(x):
+    return "a_" + str(x)
+    
 if args.type == 'egalitarian':
-    obj = 'Maximize\n  obj: '
-    # TODO
+    obj = 'Maximize\n  obj: aMin'
+    for a in p.A():
+        c = Constraint()
+        for g in p.GS():
+            c.addVariable(xvar(g), p.T[g[0]][a-1])
+        c.addVariable(avar(a), -1.0)
+        c.setBound(0.0)
+        c.setType(Constraint.EQ)
+        constr.append(c)
+    
+        c = Constraint()
+        c.addVariable("aMin", 1.0)
+        c.addVariable(avar(a), -1.0)
+        c.setBound(0.0)
+        c.setType(Constraint.LT)
+        constr.append(c)
     
 elif args.type == 'elitist':
     obj = 'Maximize\n  obj: '
     # TODO
 
-elif args.type == 'minmaxmin':
+elif args.type == 'balanced':
     obj = 'Minimize\n  obj: '
     # TODO
 

@@ -129,7 +129,7 @@ def mcnets_generator(method, goal, a, i):
         % (problem_id, test_id, problem_type, problem_file, agents, rules, seed, parameters, mip_file, mip_parameters))
 
 ###
-### MTZDD with trinomial distribution (egalitarian, elitist and minmaxmin)
+### MTZDD with trinomial distribution (egalitarian, elitist and balanced)
 ###
 
 def mtzdd_generator(goal, a, i):
@@ -184,12 +184,15 @@ for a in range(n0, n + 1, n0):
     print "  Generating %d problems with %d agents." % (r, a)
     for i in range(r):
         mcnets_generator('decay', 'egalitarian', a, i)
-        mcnets_generator('decay', 'elitist', a, i)
+        # Not used in paper
+        # mcnets_generator('decay', 'elitist', a, i)
         mcnets_generator('trinomial', 'egalitarian', a, i)
-        mcnets_generator('trinomial', 'elitist', a, i)
+        # Not used in paper
+        # mcnets_generator('trinomial', 'elitist', a, i)
         mtzdd_generator('egalitarian', a, i)
-        mtzdd_generator('elitist', a, i)
-        mtzdd_generator('minmaxmin', a, i)
+        # Not used in paper
+        # mtzdd_generator('elitist', a, i)
+        mtzdd_generator('balanced', a, i)
                    
 #
 # Save the database
