@@ -143,8 +143,9 @@ elif args.type == 'utilitarian-tu':
             obj += ' + '
         else:
             first = False
-        
-        obj += str(p.T[g[0]]) + ' ' + xvar(g)
+
+        # For TU we take only the first component of the payout vector as the value        
+        obj += str(p.T[g[0]][0]) + ' ' + xvar(g)
     obj += '\n'
 
 ###
