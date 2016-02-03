@@ -30,7 +30,7 @@ set(DIRECTORY ${PROJECT_SOURCE_DIR}/experiments)
 set(CORES 2)
 
 set(SEED 314159265)
-set(AGENTS 30)
+set(AGENTS 100)
 set(STEPS 10)
 set(REPETITIONS 5)
 

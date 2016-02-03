@@ -6,6 +6,7 @@
 
 from signal import signal, SIGINT
 from sys import exit
+import os
 
 def signal_handler(signal, frame):
     print "  \033[1;33mProblem generation interrupted by user.\033[0m"
@@ -116,9 +117,13 @@ for a in range(args.rules):
         if args.method == 'decay':
             decay_alpha = args.params[0]
             decay_p = args.params[1]
+            if args.output.name == '<stdout>':
+                os.system('./bdd.py --agents ' + str(args.agents) + ' --alpha ' + str(decay_alpha) + ' --seed ' + str(args.seed))
+            else:
+                os.system('./bdd.py --agents ' + str(args.agents) + ' --alpha ' + str(decay_alpha) + ' --seed ' + str(args.seed) + ' ' + args.output.name)
             
-            r = MTZDD.getRandomRuleDecayDistribution(args.agents, decay_alpha, decay_p)        
-
+            sys.exit(0)
+                        
     rules.append(r)
         
 ###

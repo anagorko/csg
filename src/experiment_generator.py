@@ -135,6 +135,8 @@ def mcnets_generator(method, goal, a, i):
 def mtzdd_generator(goal, a, i):
     global decay_alpha, decay_, tri_p, tri_n, cur
 
+    decay_alpha = 0.75
+    
     test_id = 'mtzdd-decay-'+goal+'-ntu'
     problem_id = 'mtzdd_' + str(a) + '_' + str(i + 1) + '_decay_' + goal
     problem_type = 'mtzdd'

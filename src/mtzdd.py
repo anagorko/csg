@@ -69,9 +69,12 @@ class MTZDD(object):
     
     def __str__(self):
         r = ''
-        
+
         for id, v in self.I.iteritems():
-            r += str(id) + ' ' + str(v) + ' ' + str(self.L[id]) + ' ' + str(self.H[id]) + ' '
+            if id == self.u0:
+                r = str(id) + ' ' + str(v) + ' ' + str(self.L[id]) + ' ' + str(self.H[id]) + ' ' + r
+            else:
+                r += str(id) + ' ' + str(v) + ' ' + str(self.L[id]) + ' ' + str(self.H[id]) + ' '
         
         r += '0 '
         
@@ -91,7 +94,8 @@ class MTZDD(object):
         
         i = iter(map(int, s.split(' ')))
 
-        n = i.next()
+        n = i.next()        
+        r.u0 = n
         while n != 0:
             v = i.next()
             l = i.next()
@@ -119,13 +123,13 @@ class MTZDD(object):
         self._goals = {}
         self._GS = []
         self._nodes = {}
-        self._A = []
+        self._A = set()
         
         for n in self.I:
             if not self.I[n] in self._nodes:
                 self._nodes[self.I[n]] = []
             self._nodes[self.I[n]].append(n)
-            self._A.append(self.I[n])
+            self._A.add(self.I[n])
 
         _GS = []
         for t in self.T:

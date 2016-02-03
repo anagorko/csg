@@ -12,6 +12,7 @@ configure_file(mtzdd_mip_generator.py .. COPYONLY)
 configure_file(parallel_solver.py .. COPYONLY)
 configure_file(csg_worker.py .. COPYONLY)
 configure_file(graph_generator.py .. COPYONLY)
+configure_file(bdd.py .. COPYONLY)
 
 add_test(mcnets ../mcnets.py)
 add_test(mtzdd ../mtzdd.py)
