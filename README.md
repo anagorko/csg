@@ -1,3 +1,5 @@
+# Non-Utilitarian Coalition Structure Generation
+
 ## Re-creating experiments discsussed in the paper
 
 In order to generate computations on a generic Linux machine please run the following code
