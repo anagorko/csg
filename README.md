@@ -1,4 +1,20 @@
-# Non-Utilitarian Optimal Coalition Structure Generation
+## Re-creating experiments discsussed in the paper
+
+In order to generate computations on a generic Linux machine please run the following code
+
+```
+mkdir build
+cd build
+cmake ..
+make
+make problems
+make computations
+```
+
+Graphs from the paper can be generated with
+```
+make graphs
+```
 
 ## File format for MC-Nets representation
 
